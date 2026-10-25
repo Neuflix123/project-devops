@@ -1,10 +1,12 @@
+name: smart-city-backend
+
 services:
   db:
     image: mysql:8.0
     container_name: smartcity-db
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: smartcity
+      MYSQL_DATABASE: smart_city_db
     volumes:
       - dbdata:/var/lib/mysql
       - ./database.sql:/docker-entrypoint-initdb.d/database.sql
@@ -25,9 +27,9 @@ services:
       PORT: 3000
       DB_HOST: db
       DB_USER: root
-      DB_PASSWORD: rootpass
-      DB_NAME: smartcity
-      JWT_SECRET: ganti-dengan-secret-kamu
+      DB_PASS: rootpass
+      DB_NAME: smart_city_db
+      JWT_SECRET: rahasia_negara_smart_city
     ports:
       - "3000:3000"
     volumes:

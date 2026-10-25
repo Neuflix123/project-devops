@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 
@@ -9,16 +10,13 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// HARUS ADA BARIS INI
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 
-// Sebaiknya seperti ini agar membuka localhost:3000 langsung ke login
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/login.html');
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 const PORT = process.env.PORT || 3000;
