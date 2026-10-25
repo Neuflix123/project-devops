@@ -1,0 +1,47 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ci:
+    name: CI - Build dan Push Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependency dan cek syntax
+        run: |
+          npm ci
+          node --check server.js
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/smart-city-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/smart-city-backend:${{ github.sha }}
+
+  cd:
+    name: CD - Deploy Container
+    needs: ci
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tarik image terbaru dan jalankan ulang
+        run: |
+          docker compose pull app
+          docker compose up -d
+          docker compose ps
